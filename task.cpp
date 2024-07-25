@@ -7,17 +7,42 @@ using namespace std;
 struct Task {
     string name;
     string description;
-    Task(const string& n, const string& desc) : name(n), description(desc) {}
+    bool completed;
+
+    Task(const string& n, const string& desc) : name(n), description(desc), completed(false) {}
 };
 
-void displayTasks(const vector<Task*>& tasks) {
+void displayTasks(const vector<Task*>& tasks, bool showCompleted = false) {
     if (tasks.empty()) {
         cout << "No tasks to display." << endl;
     } else {
-        cout << "Tasks:" << endl;
+        cout << (showCompleted ? "Completed Tasks:" : "Tasks:") << endl;
         for (size_t i = 0; i < tasks.size(); ++i) {
-            cout << i + 1 << ". " << tasks[i]->name << ": " << tasks[i]->description << endl;
+            if (tasks[i]->completed == showCompleted) {
+                cout << i + 1 << ". " << tasks[i]->name << ": " << tasks[i]->description;
+                if (showCompleted) {
+                    cout << " (Completed)";
+                }
+                cout << endl;
+            }
         }
+    }
+}
+
+void markTaskCompleted(vector<Task*>& tasks) {
+    if (tasks.empty()) {
+        cout << "No tasks available to mark as completed." << endl;
+        return;
+    }
+
+    int index;
+    cout << "Enter task number to mark as completed: ";
+    cin >> index;
+    if (index >= 1 && index <= static_cast<int>(tasks.size())) {
+        tasks[index - 1]->completed = true;
+        cout << "Task marked as completed." << endl;
+    } else {
+        cout << "Invalid task number!" << endl;
     }
 }
 
@@ -37,7 +62,9 @@ int main() {
         cout << "1. Add a task" << endl;
         cout << "2. Remove a task" << endl;
         cout << "3. View tasks" << endl;
-        cout << "4. Exit" << endl;
+        cout << "4. Mark a task as completed" << endl;
+        cout << "5. View completed tasks" << endl;
+        cout << "6. Exit" << endl;
         cout << "Enter your choice: ";
         cin >> choice;
 
@@ -74,13 +101,19 @@ int main() {
                 displayTasks(tasks);
                 break;
             case 4:
+                markTaskCompleted(tasks);
+                break;
+            case 5:
+                displayTasks(tasks, true);
+                break;
+            case 6:
                 cout << "Exiting program." << endl;
                 break;
             default:
-                cout << "Invalid choice. Please enter a number from 1 to 4." << endl;
+                cout << "Invalid choice. Please enter a number from 1 to 6." << endl;
         }
 
-    } while (choice != 4);
+    } while (choice != 6);
 
     deleteTasks(tasks);
 
